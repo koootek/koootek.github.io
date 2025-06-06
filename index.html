@@ -1,14 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="darkmode">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/jpg" href="cat.jpg">
+    <link rel="icon" type="image/jpg" href="assets/favicon.jpg">
     <title>Sraka</title>
     <style>
+        :root {
+            --body-background-color: #efefef;
+            --visibility-filter: brightness(0);
+            --text-color: #1f1f1f;
+            --light-border-color: #afafaf;
+            --light-background-color: #dfdfdf;
+            --opposite-border-color: #3f3f3f;
+        }
+
+        html.darkmode {
+            --body-background-color: #1f1f1f;
+            --visibility-filter: grayscale(1) invert(1);
+            --text-color: #efefef;
+            --light-border-color: #5f5f5f;
+            --light-background-color: #2f2f2f;
+            --opposite-border-color: #dfdfdf;
+        }
+
         * {
             margin: 5px 0;
+            color: var(--text-color);
+        }
+
+        body {
+            background-color: var(--body-background-color);
         }
 
         @keyframes squishy-nigga {
@@ -80,28 +103,118 @@
             font-size: 300%;
         }
 
-        #grzesioImage {
-            display: none;
-            z-index: 69;
-            position: absolute;
-            top: 30%;
-            left: 30%;
-            transition: top 200ms ease-in-out, left 200ms ease-in-out;
+        #audioPlayerBar {
+            position: fixed;
+            z-index: 999;
+            top: 64px;
+            right: 4px;
+            background-color: var(--light-background-color);
+            border: 1px solid var(--light-border-color);
+            border-radius: 5px;
+            padding: 5px 10px 5px 10px;
+        }
+
+        #audioPlayerBar>img,
+        #audioPlayerBar>div:nth-of-type(1) {
+            float: left;
+        }
+
+        #audioPlayerBar>img {
+            width: 48px;
+            height: 48px;
+        }
+
+        #audioPlayerBar>div:nth-of-type(1) {
+            padding-left: 10px;
+            height: 48px;
+        }
+
+        #audioPlayerBar>div:nth-of-type(1)>h4 {
+            margin-top: 0px;
+            border-bottom: 1px solid var(--opposite-border-color);
+            border-radius: 5%;
+        }
+
+        #audioPlayerBar>div:nth-of-type(1)>h5 {
+            text-align: center;
+        }
+
+        #audioPlayerBar>#volume {
+            float: right;
+            margin-left: 5px;
+            padding: 5px;
+            height: 48px;
+            accent-color: #8878c3;
+        }
+
+        #audioPlayerBar>#timeline {
+            clear: both;
+            display: block;
+            width: 100%;
+            accent-color: red;
+        }
+
+        #audioPlayerBar>div:nth-of-type(2) {
+            clear: both;
+            display: flex;
+            justify-content: center;
+            margin: 10px 0px 0px 0px;
+            width: 100%;
+        }
+
+        #audioPlayerBar>div:nth-of-type(2)>img {
+            float: left;
+            display: inline-block;
+            margin: 0px;
+            padding: 0px 5px 0px 5px;
+            width: 24px;
+            height: 24px;
+            filter: var(--visibility-filter);
+        }
+
+        #settingsBar {
+            position: fixed;
+            z-index: 999;
+            top: 10px;
+            right: 4px;
+            background-color: var(--light-background-color);
+            border: 1px solid var(--light-border-color);
+            border-radius: 5px;
+            padding: 5px 10px 5px 10px;
+        }
+
+        #colorModeSwitch {
+            width: 24px;
+            height: 24px;
+            filter: var(--visibility-filter);
+            margin: 5px 0px 0px 0px;
         }
     </style>
 </head>
 
 <body>
+    <div id="audioPlayerBar">
+        <img alt="audio icon">
+        <div>
+            <h4>Title</h4>
+            <h5>Author</h5>
+        </div>
+        <input id="volume" type="range" value="50" step="1" min="0" max="100"
+            style="writing-mode: vertical-lr; direction: rtl; appearance: slider-vertical; vertical-align: bottom;">
+        <input id="timeline" type="range" value="0" step="1">
+        <div>
+            <img id="previous" src="assets/icons/previous.svg" alt="previous icon">
+            <img id="playback" src="assets/icons/play.svg" alt="play icon">
+            <img id="next" src="assets/icons/next.svg" alt="next icon">
+        </div>
+    </div>
+
+    <div id="settingsBar">
+        <img id="colorModeSwitch" src="assets/icons/lightmode.svg" alt="switch dark/light mode">
+    </div>
+
     <mark>i hate niggers</mark>
     <p>pay gorn</p>
-    <p style="display: inline-block; background-color: #df5f5f">jakosc grzegorza</p>
-    <br>
-    <select id="wybranyGrzegorz" style="z-index: 420">
-        <option value="8kbps">grzegorz 8kbps</option>
-        <option value="64kbps">grzegorz 64kbps</option>
-    </select>
-    <br>
-    <a href="login">auth soon</a>
 
     <h2>nig nig nig nig nig</h2>
 
@@ -123,51 +236,211 @@
 
     <h2>nig nig nig nig nig</h2>
 
-    <img id="grzesioImage" src="grzegooorzu.jpg">
-
-    <audio id="grzesioAudio" loop>
-        <source id="grzesioSource" src="grzesio8kbps.mp3" type="audio/mpeg">
+    <audio id="audioPlayer">
         bocik nie ma audio
     </audio>
 
     <script>
-        const wybranyGrzegorz = document.getElementById("wybranyGrzegorz");
-        const grzesioImage = document.getElementById("grzesioImage");
-        const grzesioAudio = document.getElementById("grzesioAudio");
-        const grzesioSource = document.getElementById("grzesioSource");
+        const audioPlayer = document.getElementById("audioPlayer");
+        const audioPlayerBar = document.getElementById("audioPlayerBar");
 
-        wybranyGrzegorz.selectedIndex = 0;
-
-        wybranyGrzegorz.addEventListener("input", () => {
-            console.log("grzesio8kbps on top");
-            let grzesioProgress = grzesioAudio.currentTime;
-            grzesioSource.src = `grzesio${wybranyGrzegorz.value}.mp3`;
-            grzesioAudio.load();
-            grzesioAudio.currentTime = grzesioProgress;
-            grzesioAudio.play();
+        const audioPlayerBarComponents = Object.freeze({
+            icon: audioPlayerBar.querySelector("img"),
+            title: audioPlayerBar.querySelector("h4"),
+            author: audioPlayerBar.querySelector("h5"),
         });
 
-        document.body.addEventListener("click", () => {
-            console.log("ale glupia malpa");
-            grzesioAudio.play();
-            grzesioImage.style.display = "block";
+        class AudioController {
+            #currentTrack = 0;
+            #playing = false;
+            #paused = false;
+            #soundtracks;
+            autoplay = true;
 
-            let h1s = document.querySelectorAll("h1");
-            let h3s = document.querySelectorAll("h3");
-            for (h1 of h1s) {
-                h1.innerText = h1.innerText.replaceAll("!!!NIGGER!!!", "GET GRZEGORZED");
+            constructor(soundtracks) {
+                this.#soundtracks = soundtracks;
+                this.#updateTrackDisplay();
+                this.currentTrack.load();
+                setInterval(() => {
+                    controlButtons.timeline.value = audioPlayer.currentTime;
+                    if (audioPlayer.ended && this.autoplay)
+                        this.nextTrack();
+                }, 100);
             }
-            for (h3 of h3s) {
-                h3.innerText = h3.innerText.replaceAll("!!!NIGGER!!!", "GET GRZEGORZED");
+
+            get currentTrack() {
+                return this.#soundtracks[this.#currentTrack];
             }
+
+            get playing() {
+                return this.#playing;
+            }
+
+            get paused() {
+                return this.#paused;
+            }
+
+            #moveTrack(incrementCallback) {
+                incrementCallback();
+                this.#updateTrackDisplay();
+                this.#playing = false;
+                this.#paused = false;
+                this.currentTrack.load();
+                if (this.autoplay) {
+                    this.play();
+                    controlButtons.playback.src = "assets/icons/pause.svg";
+                }
+                else
+                    controlButtons.playback.src = "assets/icons/play.svg";
+            }
+
+            nextTrack() {
+                this.#moveTrack(() => {
+                    this.#currentTrack++;
+                    if (this.#currentTrack >= this.#soundtracks.length)
+                        this.#currentTrack = 0;
+                });
+            }
+
+            previousTrack() {
+                if (audioPlayer.currentTime > 5) {
+                    audioPlayer.currentTime = 0;
+                    return;
+                }
+
+                this.#moveTrack(() => {
+                    this.#currentTrack--;
+                    if (this.#currentTrack < 0)
+                        this.#currentTrack = this.#soundtracks.length - 1;
+                });
+            }
+
+            play() {
+                if (this.#paused && audioPlayer.paused) {
+                    audioPlayer.play();
+                    this.#paused = false;
+                }
+
+                if (this.#playing) {
+                    return;
+                }
+
+                this.currentTrack.play();
+                this.#playing = true;
+                this.setVolume(controlButtons.volume.value / 100);
+            }
+
+            pause() {
+                if (!this.#playing || this.#paused)
+                    return;
+
+                audioPlayer.pause();
+                this.#paused = true;
+            }
+
+            setProgress(newTime) {
+                audioPlayer.currentTime = newTime;
+            }
+
+            setVolume(newVolume) {
+                audioPlayer.volume = Math.min(Math.max(newVolume, 0.0), 1.0);
+            }
+
+            #updateTrackDisplay() {
+                audioPlayerBarComponents.icon.src = `assets/images/${this.currentTrack.iconPath}`;
+                audioPlayerBarComponents.title.innerText = this.currentTrack.title;
+                audioPlayerBarComponents.author.innerText = this.currentTrack.author;
+            }
+        }
+
+        class Soundtrack {
+            constructor(title, author, iconPath, trackPath) {
+                this.title = title;
+                this.author = author;
+                this.iconPath = iconPath;
+                this.trackPath = trackPath;
+            }
+
+            load() {
+                audioPlayer.src = `assets/music/${this.trackPath}`;
+                audioPlayer.load();
+            }
+
+            play() {
+                audioPlayer.play();
+            }
+        }
+
+        const audioController = new AudioController([
+            new Soundtrack("HH (Chrisitan Version)", "Kayne West (spring)", "holy.png", "ye_heiljesus.mp3"),
+            new Soundtrack("HH", "Kayne West", "hh.png", "ye_hh.mp3"),
+            new Soundtrack("Nie mogę oddychać", "Grzesiek Floryda 997", "grzegooorzu.jpg", "grzesio.mp3"),
+            new Soundtrack("RU_BOOTLEG", "ilyhiryu", "bootleg.png", "ru_bootleg.mp3"),
+        ]);
+
+        const controlButtons = Object.freeze({
+            playback: document.getElementById("playback"),
+            previous: document.getElementById("previous"),
+            next: document.getElementById("next"),
+            timeline: document.getElementById("timeline"),
+            volume: document.getElementById("volume"),
         });
 
-        setInterval(() => {
-            const x = Math.random() * (window.innerWidth - grzesioImage.clientWidth);
-            const y = Math.random() * (window.innerHeight - grzesioImage.clientHeight);
-            grzesioImage.style.top = `${y}px`;
-            grzesioImage.style.left = `${x}px`;
-        }, 100);
+        audioPlayer.addEventListener("loadedmetadata", () => {
+            controlButtons.timeline.max = audioPlayer.duration;
+        });
+
+        controlButtons.playback.addEventListener("click", () => {
+            if (audioController.playing && !audioController.paused) {
+                audioController.pause();
+                controlButtons.playback.src = "assets/icons/play.svg";
+            } else {
+                audioController.play();
+                controlButtons.playback.src = "assets/icons/pause.svg";
+            }
+        });
+        controlButtons.previous.addEventListener("click", () => {
+            audioController.previousTrack();
+        });
+        controlButtons.next.addEventListener("click", () => {
+            audioController.nextTrack();
+        });
+
+        controlButtons.timeline.addEventListener("change", () => {
+            audioController.setProgress(controlButtons.timeline.value);
+        });
+        controlButtons.volume.addEventListener("mousemove", () => {
+            audioController.setVolume(controlButtons.volume.value / 100);
+        });
+
+        function readCookie(name) {
+            name = `${name}=`;
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name))
+                    return cookie.substring(name.length);
+            }
+            return null;
+        }
+
+        function setDarkMode(darkMode) {
+            colorModeSwitch.src = `assets/icons/${darkMode ? "lightmode" : "darkmode"}.svg`
+            document.documentElement.className = darkMode ? "darkmode" : "";
+            const expirationDate = new Date();
+            expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+            document.cookie = `darkmode=${darkMode}; expires=${expirationDate.toUTCString()}; path=/`;
+        }
+
+        const colorModeSwitch = document.getElementById("colorModeSwitch");
+        let darkModeCookie = readCookie("darkmode");
+        let darkMode = darkModeCookie == null ? true : (darkModeCookie === "true");
+
+        setDarkMode(darkMode);
+        colorModeSwitch.addEventListener("click", () => {
+            darkMode = !darkMode;
+            setDarkMode(darkMode);
+        });
     </script>
 </body>
 
