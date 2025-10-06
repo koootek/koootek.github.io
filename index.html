@@ -203,9 +203,10 @@
             style="writing-mode: vertical-lr; direction: rtl; appearance: slider-vertical; vertical-align: bottom;">
         <input id="timeline" type="range" value="0" step="1">
         <div>
-            <img id="previous" src="assets/icons/previous.svg" alt="previous icon">
-            <img id="playback" src="assets/icons/play.svg" alt="play icon">
-            <img id="next" src="assets/icons/next.svg" alt="next icon">
+            <img id="quality" src="assets/icons/highquality.svg" title="change quality" alt="change quality">
+            <img id="previous" src="assets/icons/previous.svg" title="previous icon" alt="previous icon">
+            <img id="playback" src="assets/icons/play.svg" title="play icon" alt="play icon">
+            <img id="next" src="assets/icons/next.svg" title="next icon" alt="next icon">
         </div>
     </div>
 
@@ -243,12 +244,23 @@
     <script>
         const audioPlayer = document.getElementById("audioPlayer");
         const audioPlayerBar = document.getElementById("audioPlayerBar");
+        let highQuality = true;
 
         const audioPlayerBarComponents = Object.freeze({
             icon: audioPlayerBar.querySelector("img"),
             title: audioPlayerBar.querySelector("h4"),
             author: audioPlayerBar.querySelector("h5"),
         });
+
+        const controlButtons = Object.freeze({
+            playback: document.getElementById("playback"),
+            previous: document.getElementById("previous"),
+            next: document.getElementById("next"),
+            timeline: document.getElementById("timeline"),
+            volume: document.getElementById("volume"),
+            quality: document.getElementById("quality"),
+        });
+
 
         class AudioController {
             #currentTrack = 0;
@@ -362,7 +374,10 @@
             }
 
             load() {
-                audioPlayer.src = `assets/music/${this.trackPath}`;
+                if (highQuality)
+                    audioPlayer.src = `assets/music/${this.trackPath}`;
+                else
+                    audioPlayer.src = `assets/music/${this.trackPath}`.replace(".mp3", "-low.mp3");
                 audioPlayer.load();
             }
 
@@ -372,19 +387,12 @@
         }
 
         const audioController = new AudioController([
-            new Soundtrack("HH (Chrisitan Version)", "Kayne West (spring)", "holy.png", "ye_heiljesus.mp3"),
-            new Soundtrack("HH", "Kayne West", "hh.png", "ye_hh.mp3"),
+            new Soundtrack("DJ MELON (NeckHurts)", "Rootshay", "neckhurts.jpg", "neckhurts.mp3"),
+            new Soundtrack("HH (Chrisitan Version)", "Kayne West (spring)", "holy.jpg", "ye_heiljesus.mp3"),
+            new Soundtrack("HH", "Kayne West", "hh.jpg", "ye_hh.mp3"),
             new Soundtrack("Nie mogę oddychać", "Grzesiek Floryda 997", "grzegooorzu.jpg", "grzesio.mp3"),
-            new Soundtrack("RU_BOOTLEG", "ilyhiryu", "bootleg.png", "ru_bootleg.mp3"),
+            new Soundtrack("RU_BOOTLEG", "ilyhiryu", "bootleg.jpg", "ru_bootleg.mp3"),
         ]);
-
-        const controlButtons = Object.freeze({
-            playback: document.getElementById("playback"),
-            previous: document.getElementById("previous"),
-            next: document.getElementById("next"),
-            timeline: document.getElementById("timeline"),
-            volume: document.getElementById("volume"),
-        });
 
         audioPlayer.addEventListener("loadedmetadata", () => {
             controlButtons.timeline.max = audioPlayer.duration;
@@ -405,13 +413,25 @@
         controlButtons.next.addEventListener("click", () => {
             audioController.nextTrack();
         });
-
-        controlButtons.timeline.addEventListener("change", () => {
+        controlButtons.timeline.addEventListener("input", () => {
             audioController.setProgress(controlButtons.timeline.value);
         });
         controlButtons.volume.addEventListener("mousemove", () => {
             audioController.setVolume(controlButtons.volume.value / 100);
         });
+        controlButtons.quality.addEventListener("click", () => {
+            highQuality = !highQuality;
+            if (highQuality)
+                controlButtons.quality.src = "assets/icons/highquality.svg";
+            else
+                controlButtons.quality.src = "assets/icons/lowquality.svg";
+            let currentTime = audioPlayer.currentTime;
+            audioController.currentTrack.load();
+            audioPlayer.currentTime = currentTime;
+            if (audioController.playing && !audioController.paused)
+                audioPlayer.play();
+        });
+
 
         function readCookie(name) {
             name = `${name}=`;
