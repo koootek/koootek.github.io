@@ -193,12 +193,13 @@ class AudioController {
         let highQualityCookie = readCookie("highQuality");
         let highQuality = highQualityCookie == null ? true : highQualityCookie === "true";
         let audioVolumeCookie = readCookie("audioVolume");
-        let audioVolume = audioVolumeCookie == null ? 0.5 : parseFloat(audioVolume);
+        let audioVolume = audioVolumeCookie == null ? 0.5 : parseFloat(audioVolumeCookie);
 
         this.#currentTrack = track;
         this.highQuality = highQuality;
         this.#updateTrackDisplay();
         this.currentTrack.load(this.highQuality);
+        audioPlayer.volume = audioVolume;
         audioPlayer.currentTime = trackProgress;
     }
 
