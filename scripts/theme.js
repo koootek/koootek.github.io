@@ -14,9 +14,7 @@ createElements();
 function setDarkMode(darkMode) {
     colorModeSwitch.src = `assets/icons/${darkMode ? "lightmode" : "darkmode"}.svg`
     document.documentElement.className = darkMode ? "darkmode" : "";
-    const expirationDate = new Date();
-    expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-    document.cookie = `darkmode=${darkMode};expires=${expirationDate.toUTCString()};path=/`;
+    writeCookie("darkmode", darkMode);
 }
 
 const colorModeSwitch = document.getElementById("colorModeSwitch");

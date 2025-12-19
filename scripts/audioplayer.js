@@ -62,13 +62,10 @@ function createElements() {
     document.body.appendChild(audioPlayerBar);
 }
 
-// TODO: save track, track state, audio volume and tracks between pages and refreshes
-
 createElements();
 
 const audioPlayer = document.getElementById("audioPlayer");
 const audioPlayerBar = document.getElementById("audioPlayerBar");
-let highQuality = true;
 
 const audioPlayerBarComponents = Object.freeze({
     icon: audioPlayerBar.querySelector("img"),
@@ -85,18 +82,18 @@ const controlButtons = Object.freeze({
     quality: document.getElementById("quality"),
 });
 
-
 class AudioController {
     #currentTrack = 0;
     #playing = false;
     #paused = false;
     #soundtracks;
-    autoplay = true;
+    autoplay = true; // unhandled
+    highQuality = true;
 
     constructor(soundtracks) {
         this.#soundtracks = soundtracks;
         this.#updateTrackDisplay();
-        this.currentTrack.load();
+        this.currentTrack.load(this.highQuality);
         setInterval(() => {
             controlButtons.timeline.value = audioPlayer.currentTime;
             if (audioPlayer.ended && this.autoplay)
@@ -121,7 +118,7 @@ class AudioController {
         this.#updateTrackDisplay();
         this.#playing = false;
         this.#paused = false;
-        this.currentTrack.load();
+        this.currentTrack.load(this.highQuality);
         if (this.autoplay) {
             this.play();
             controlButtons.playback.src = "assets/icons/pause.svg";
@@ -187,6 +184,30 @@ class AudioController {
         audioPlayerBarComponents.title.innerText = this.currentTrack.title;
         audioPlayerBarComponents.author.innerText = this.currentTrack.author;
     }
+
+    loadData() {
+        let trackCookie = readCookie("track");
+        let track = trackCookie == null ? 0 : parseInt(trackCookie);
+        let trackProgressCookie = readCookie("trackProgress");
+        let trackProgress = trackProgressCookie == null ? 0 : parseFloat(trackProgressCookie);
+        let highQualityCookie = readCookie("highQuality");
+        let highQuality = highQualityCookie == null ? true : highQualityCookie === "true";
+        let audioVolumeCookie = readCookie("audioVolume");
+        let audioVolume = audioVolumeCookie == null ? 0.5 : parseFloat(audioVolume);
+
+        this.#currentTrack = track;
+        this.highQuality = highQuality;
+        this.#updateTrackDisplay();
+        this.currentTrack.load(this.highQuality);
+        audioPlayer.currentTime = trackProgress;
+    }
+
+    saveData() {
+        writeCookie("track", this.#currentTrack);
+        writeCookie("trackProgress", audioPlayer.currentTime);
+        writeCookie("highQuality", this.highQuality);
+        writeCookie("audioVolume", audioPlayer.volume);
+    }
 }
 
 class Soundtrack {
@@ -197,7 +218,7 @@ class Soundtrack {
         this.trackPath = trackPath;
     }
 
-    load() {
+    load(highQuality) {
         if (highQuality)
             audioPlayer.src = `assets/music/${this.trackPath}`;
         else
@@ -221,6 +242,7 @@ const audioController = new AudioController([
     new Soundtrack("RU_BOOTLEG", "ilyhiryu", "bootleg.jpg", "ru_bootleg.mp3"),
     new Soundtrack("WE ARE CHARLIE KIRK", "Unknown", "wearecharlie.png", "wearecharlie.mp3"),
 ]);
+audioController.loadData();
 
 audioPlayer.addEventListener("loadedmetadata", () => {
     controlButtons.timeline.max = audioPlayer.duration;
@@ -237,19 +259,24 @@ controlButtons.playback.addEventListener("click", () => {
 });
 controlButtons.previous.addEventListener("click", () => {
     audioController.previousTrack();
+    audioController.saveData();
 });
 controlButtons.next.addEventListener("click", () => {
     audioController.nextTrack();
+    audioController.saveData();
 });
 controlButtons.timeline.addEventListener("input", () => {
     audioController.setProgress(controlButtons.timeline.value);
+    audioController.saveData();
 });
 controlButtons.volume.addEventListener("mousemove", () => {
     audioController.setVolume(controlButtons.volume.value / 100);
+    audioController.saveData();
 });
 controlButtons.quality.addEventListener("click", () => {
-    highQuality = !highQuality;
-    if (highQuality)
+    audioController.highQuality = !audioController.highQuality;
+    audioController.saveData();
+    if (audioController.highQuality)
         controlButtons.quality.src = "assets/icons/highquality.svg";
     else
         controlButtons.quality.src = "assets/icons/lowquality.svg";
