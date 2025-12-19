@@ -1,0 +1,184 @@
+:root {
+    --body-background-color: #efefef;
+    --visibility-filter: brightness(0);
+    --text-color: #1f1f1f;
+    --light-border-color: #afafaf;
+    --light-background-color: #dfdfdf;
+    --opposite-border-color: #3f3f3f;
+}
+
+html.darkmode {
+    --body-background-color: #1f1f1f;
+    --visibility-filter: grayscale(1) invert(1);
+    --text-color: #efefef;
+    --light-border-color: #5f5f5f;
+    --light-background-color: #2f2f2f;
+    --opposite-border-color: #dfdfdf;
+}
+
+* {
+    margin: 5px 0;
+    color: var(--text-color);
+}
+
+body {
+    background-color: var(--body-background-color);
+}
+
+@keyframes squishy-nigga {
+    0% {
+        scale: 0.5 1.2;
+    }
+
+    50% {
+        scale: 1.2 0.5;
+    }
+
+    100% {
+        scale: 0.5 1.2;
+    }
+}
+
+h1 {
+    animation-name: squishy-nigga;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-direction: alternate-reverse;
+    animation-iteration-count: infinite;
+
+    background-color: blue;
+    text-align: center;
+    color: white;
+}
+
+@keyframes rotating-nigga {
+    0% {
+        rotate: 0deg;
+    }
+
+    100% {
+        rotate: 360deg;
+    }
+}
+
+h2 {
+    animation-name: rotating-nigga;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    color: red;
+    text-align: center;
+    font-size: 400%;
+}
+
+@keyframes invisible-nigga {
+    0% {
+        opacity: 100%;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+h3 {
+    animation-name: invisible-nigga;
+    animation-duration: 200ms;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    text-align: center;
+    background-color: cyan;
+    color: green;
+    font-size: 300%;
+}
+
+#audioPlayerBar {
+    position: fixed;
+    z-index: 999;
+    top: 64px;
+    right: 4px;
+    background-color: var(--light-background-color);
+    border: 1px solid var(--light-border-color);
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+}
+
+#audioPlayerBar>img,
+#audioPlayerBar>div:nth-of-type(1) {
+    float: left;
+}
+
+#audioPlayerBar>img {
+    width: 48px;
+    height: 48px;
+}
+
+#audioPlayerBar>div:nth-of-type(1) {
+    padding-left: 10px;
+    height: 48px;
+}
+
+#audioPlayerBar>div:nth-of-type(1)>h4 {
+    margin-top: 0px;
+    border-bottom: 1px solid var(--opposite-border-color);
+    border-radius: 5%;
+}
+
+#audioPlayerBar>div:nth-of-type(1)>h5 {
+    text-align: center;
+}
+
+#audioPlayerBar>#volume {
+    float: right;
+    margin-left: 5px;
+    padding: 5px;
+    height: 48px;
+    accent-color: #8878c3;
+    writing-mode: vertical-lr;
+    direction: rtl;
+    vertical-align: bottom;
+}
+
+#audioPlayerBar>#timeline {
+    clear: both;
+    display: block;
+    width: 100%;
+    accent-color: red;
+}
+
+#audioPlayerBar>div:nth-of-type(2) {
+    clear: both;
+    display: flex;
+    justify-content: center;
+    margin: 10px 0px 0px 0px;
+    width: 100%;
+}
+
+#audioPlayerBar>div:nth-of-type(2)>img {
+    float: left;
+    margin: 0px;
+    padding: 0px 5px 0px 5px;
+    width: 24px;
+    height: 24px;
+    filter: var(--visibility-filter);
+}
+
+#settingsBar {
+    position: fixed;
+    z-index: 999;
+    top: 10px;
+    right: 4px;
+    background-color: var(--light-background-color);
+    border: 1px solid var(--light-border-color);
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+}
+
+#colorModeSwitch {
+    width: 24px;
+    height: 24px;
+    filter: var(--visibility-filter);
+    margin: 5px 0px 0px 0px;
+}

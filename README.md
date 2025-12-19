@@ -1,1 +1,1 @@
-![cute cat](/cat.jpg)
+![cute cat](/assets/cat.jpg)
