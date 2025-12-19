@@ -185,6 +185,20 @@ class AudioController {
         audioPlayerBarComponents.author.innerText = this.currentTrack.author;
     }
 
+    changeQuality() {
+        audioController.highQuality = !audioController.highQuality;
+        audioController.saveData();
+        if (audioController.highQuality)
+            controlButtons.quality.src = "assets/icons/highquality.svg";
+        else
+            controlButtons.quality.src = "assets/icons/lowquality.svg";
+        let currentTime = audioPlayer.currentTime;
+        audioController.currentTrack.load(this.highQuality);
+        audioPlayer.currentTime = currentTime;
+        if (audioController.playing && !audioController.paused)
+            audioPlayer.play();
+    }
+
     loadData() {
         let trackCookie = readCookie("track");
         let track = trackCookie == null ? 0 : parseInt(trackCookie);
@@ -196,11 +210,10 @@ class AudioController {
         let audioVolume = audioVolumeCookie == null ? 0.5 : parseFloat(audioVolumeCookie);
 
         this.#currentTrack = track;
-        this.highQuality = highQuality;
-        this.#updateTrackDisplay();
-        this.currentTrack.load(this.highQuality);
-        audioPlayer.volume = audioVolume;
-        audioPlayer.currentTime = trackProgress;
+        if (this.highQuality != highQuality)
+            this.changeQuality();
+        this.setVolume(audioVolume);
+        this.setProgress(trackProgress);
     }
 
     saveData() {
@@ -275,15 +288,6 @@ controlButtons.volume.addEventListener("mousemove", () => {
     audioController.saveData();
 });
 controlButtons.quality.addEventListener("click", () => {
-    audioController.highQuality = !audioController.highQuality;
+    audioController.changeQuality();
     audioController.saveData();
-    if (audioController.highQuality)
-        controlButtons.quality.src = "assets/icons/highquality.svg";
-    else
-        controlButtons.quality.src = "assets/icons/lowquality.svg";
-    let currentTime = audioPlayer.currentTime;
-    audioController.currentTrack.load();
-    audioPlayer.currentTime = currentTime;
-    if (audioController.playing && !audioController.paused)
-        audioPlayer.play();
 });
