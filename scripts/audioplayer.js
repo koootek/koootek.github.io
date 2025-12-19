@@ -210,10 +210,11 @@ class AudioController {
         let audioVolume = audioVolumeCookie == null ? 0.5 : parseFloat(audioVolumeCookie);
 
         this.#currentTrack = track;
+        this.#updateTrackDisplay();
         if (this.highQuality != highQuality)
             this.changeQuality();
-        this.setVolume(audioVolume);
         this.setProgress(trackProgress);
+        this.setVolume(audioVolume);
     }
 
     saveData() {
