@@ -99,6 +99,9 @@ class AudioController {
             if (audioPlayer.ended && this.autoplay)
                 this.nextTrack();
         }, 100);
+        setInterval(() => {
+            this.saveData();
+        }, 2500);
     }
 
     get currentTrack() {
@@ -214,6 +217,7 @@ class AudioController {
         if (this.highQuality != highQuality)
             this.changeQuality();
         this.setProgress(trackProgress);
+        controlButtons.volume.value = audioVolume * 100;
         this.setVolume(audioVolume);
     }
 
