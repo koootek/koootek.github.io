@@ -133,7 +133,8 @@ h3 {
 #audioPlayerBar>#volume {
     float: right;
     margin-left: 5px;
-    padding: 5px;
+    margin-right: 5px;
+    margin-bottom: 10px;
     height: 48px;
     accent-color: #8878c3;
     writing-mode: vertical-lr;
