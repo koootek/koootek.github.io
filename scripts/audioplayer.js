@@ -92,8 +92,6 @@ class AudioController {
 
     constructor(soundtracks) {
         this.#soundtracks = soundtracks;
-        this.#updateTrackDisplay();
-        this.currentTrack.load(this.highQuality);
         setInterval(() => {
             controlButtons.timeline.value = audioPlayer.currentTime;
             if (audioPlayer.ended && this.autoplay)
@@ -216,8 +214,10 @@ class AudioController {
         this.#updateTrackDisplay();
         if (this.highQuality != highQuality)
             this.changeQuality();
+        else
+            this.currentTrack.load(this.highQuality);
         this.setProgress(trackProgress);
-        controlButtons.volume.value = audioVolume * 100;
+        controlButtons.volume.value = Math.max(0, Math.min(100, audioVolume * 100));
         this.setVolume(audioVolume);
     }
 
@@ -225,7 +225,7 @@ class AudioController {
         writeCookie("track", this.#currentTrack);
         writeCookie("trackProgress", audioPlayer.currentTime);
         writeCookie("highQuality", this.highQuality);
-        writeCookie("audioVolume", audioPlayer.volume);
+        writeCookie("audioVolume", controlButtons.volume.value / 100);
     }
 }
 
