@@ -85,7 +85,6 @@ const controlButtons = Object.freeze({
 class AudioController {
     #currentTrack = 0;
     #playing = false;
-    #paused = false;
     #soundtracks;
     autoplay = true; // unhandled
     highQuality = true;
@@ -110,15 +109,10 @@ class AudioController {
         return this.#playing;
     }
 
-    get paused() {
-        return this.#paused;
-    }
-
     #moveTrack(incrementCallback) {
         incrementCallback();
         this.#updateTrackDisplay();
         this.#playing = false;
-        this.#paused = false;
         this.currentTrack.load(this.highQuality);
         if (this.autoplay) {
             this.play();
@@ -150,9 +144,9 @@ class AudioController {
     }
 
     play() {
-        if (this.#paused && audioPlayer.paused) {
+        if (!this.#playing && audioPlayer.paused) {
             audioPlayer.play();
-            this.#paused = false;
+            this.#playing = true;
         }
 
         if (this.#playing) {
@@ -165,11 +159,11 @@ class AudioController {
     }
 
     pause() {
-        if (!this.#playing || this.#paused)
+        if (!this.#playing)
             return;
 
         audioPlayer.pause();
-        this.#paused = true;
+        this.#playing = false;
     }
 
     setProgress(newTime) {
@@ -196,7 +190,7 @@ class AudioController {
         let currentTime = audioPlayer.currentTime;
         audioController.currentTrack.load(this.highQuality);
         audioPlayer.currentTime = currentTime;
-        if (audioController.playing && !audioController.paused)
+        if (audioController.playing)
             audioPlayer.play();
     }
 
@@ -268,7 +262,7 @@ audioPlayer.addEventListener("loadedmetadata", () => {
 });
 
 controlButtons.playback.addEventListener("click", () => {
-    if (audioController.playing && !audioController.paused) {
+    if (audioController.playing) {
         audioController.pause();
         controlButtons.playback.src = "assets/icons/play.svg";
     } else {
