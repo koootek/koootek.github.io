@@ -7,7 +7,7 @@ if (DEV_MODE) {
 }
 
 // Export global functions
-var readCookie = function(name) {
+const readCookie = function(name) {
     name = `${name}=`;
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
@@ -18,7 +18,7 @@ var readCookie = function(name) {
     return null;
 };
 
-var writeCookie = function(name, value) {
+const writeCookie = function(name, value) {
     const expirationDate = new Date();
     expirationDate.setFullYear(expirationDate.getFullYear() + 1);
     document.cookie = `${name}=${value};expires=${expirationDate.toUTCString()};path=/`;
