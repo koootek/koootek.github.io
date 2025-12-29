@@ -1,19 +1,21 @@
 const scene = document.getElementById("scene");
-scene.width = 800;
+scene.width = 1000;
 scene.height = 800;
 const ctx = scene.getContext("2d");
+const aspectRatio = scene.width / scene.height;
 
-// TODO: fullscreen & aspect ratio
+// TODO: fullscreen
 
 const TEXT = "#EFEFEF";
 const BACKGROUND = "#0F0F0F";
 const FOREGROUND_BOX = "#8F8F8F";
 const FOREGROUND_LINE = "#AFAFAF";
+const TO_RAD = Math.PI / 180;
 
 function project({ x, y, z }) {
     return {
         x: x / z,
-        y: y / z,
+        y: y * aspectRatio / z,
     };
 }
 
@@ -62,18 +64,18 @@ function toScreen({ x, y }) {
     };
 }
 
-function translateZ({ x, y, z }, deltaZ) {
-    return { x, y, z: z + deltaZ };
-}
-
-function rotateXZ({ x, y, z }, angle) {
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
+function rotate({ x, y, z }, { yaw, pitch }) {
+    const yawRad = yaw * TO_RAD;
+    const pitchRad = pitch * TO_RAD;
+    const cosYaw = Math.cos(yawRad);
+    const sinYaw = Math.sin(yawRad);
+    const cosPitch = Math.cos(pitchRad);
+    const sinPitch = Math.sin(pitchRad);
     return {
-        x: x * cos - z * sin,
-        y,
-        z: x * sin + z * cos,
-    }
+        x: x * cosYaw + y * sinYaw * sinPitch + z * sinYaw * cosPitch,
+        y: y * cosPitch - z * sinPitch,
+        z: x * -sinYaw + y * cosYaw * sinPitch + z * cosYaw * cosPitch,
+    };
 }
 
 function offsetBy(p1, p2) {
@@ -84,46 +86,81 @@ function offsetBy(p1, p2) {
     };
 }
 
+function worldToScreen(vertices, pos) {
+    return toScreen(project(offsetBy(offsetBy(rotate(vertices, Player.rotation), pos), Player.pos)));
+}
+
 const Player = {
-    camera: {
+    pos: {
         x: 0,
         y: 0,
         z: 0,
     },
-}
+    rotation: {
+        yaw: 0,
+        pitch: 0,
+    },
+    rotating: false,
+};
 
 document.addEventListener("keydown", (e) => {
     switch (e.code) {
         case "KeyA": {
-            Player.camera.x += 1;
+            Player.pos.x += 1;
             break;
         }
         case "KeyD": {
-            Player.camera.x -= 1;
+            Player.pos.x -= 1;
             break;
         }
         case "KeyW": {
-            Player.camera.z -= 1;
+            Player.pos.z -= 1;
             break;
         }
         case "KeyS": {
-            Player.camera.z += 1;
+            Player.pos.z += 1;
             break;
         }
         case "Space": {
-            Player.camera.y -= 1;
+            Player.pos.y -= 1;
             break;
         }
         case "ShiftLeft": {
-            Player.camera.y += 1;
+            Player.pos.y += 1;
             break;
         }
     }
+});
+document.addEventListener("mousedown", (e) => {
+    if (e.buttons != 1) // primary button
+        return;
+
+    Player.rotating = true;
+});
+document.addEventListener("mouseup", (_) => {
+    Player.rotating = false;
+    lastMouseX = undefined;
+    lastMouseY = undefined;
+});
+let lastMouseX;
+let lastMouseY;
+document.addEventListener("mousemove", (e) => {
+    if (!Player.rotating)
+        return;
+
+    if (lastMouseX != undefined && lastMouseY != undefined) {
+        Player.rotation.yaw += e.screenX - lastMouseX;
+        Player.rotation.pitch += e.screenY - lastMouseY;
+    }
+
+    lastMouseX = e.screenX;
+    lastMouseY = e.screenY;
 });
 
 let elements = [structuredClone(Cube), structuredClone(Penger)];
 elements[0].pos = { x: 0, y: 0, z: 3 };
 elements[1].pos = { x: 2, y: 0, z: 3 };
+elements[1].rotation = { yaw: 180, pitch: 0 };
 
 const MAXSAMPLES = 100;
 let timeIndex = 0;
@@ -150,7 +187,7 @@ function frame(timestamp) {
     lastTime = timestamp;
     const currentFPS = calculateFPS(deltaTime);
     for (const element of elements) {
-        if (-Player.camera.z >= element.pos.z)
+        if (-Player.pos.z >= element.pos.z)
             continue;
 
         switch (element.type) {
@@ -161,10 +198,10 @@ function frame(timestamp) {
                     const third = element.vertices[face[2]];
                     const fourth = element.vertices[face[3]];
                     drawRect(
-                        toScreen(project(offsetBy(offsetBy(first, element.pos), Player.camera))),
-                        toScreen(project(offsetBy(offsetBy(second, element.pos), Player.camera))),
-                        toScreen(project(offsetBy(offsetBy(third, element.pos), Player.camera))),
-                        toScreen(project(offsetBy(offsetBy(fourth, element.pos), Player.camera))),
+                        worldToScreen(first, element.pos),
+                        worldToScreen(second, element.pos),
+                        worldToScreen(third, element.pos),
+                        worldToScreen(fourth, element.pos),
                     );
                 }
                 break;
@@ -175,8 +212,8 @@ function frame(timestamp) {
                         const first = element.vertices[face[i]];
                         const second = element.vertices[face[(i + 1) % face.length]];
                         drawLine(
-                            toScreen(project(offsetBy(offsetBy(rotateXZ(first, element.rotate), element.pos), Player.camera))),
-                            toScreen(project(offsetBy(offsetBy(rotateXZ(second, element.rotate), element.pos), Player.camera))),
+                            worldToScreen(rotate(first, element.rotation), element.pos),
+                            worldToScreen(rotate(second, element.rotation), element.pos),
                         );
                     }
                 }
@@ -188,8 +225,8 @@ function frame(timestamp) {
                         const first = element.vertices[face[i]];
                         const second = element.vertices[face[(i + 1) % face.length]];
                         drawLine(
-                            toScreen(project(offsetBy(offsetBy(first, element.pos), Player.camera))),
-                            toScreen(project(offsetBy(offsetBy(second, element.pos), Player.camera))),
+                            worldToScreen(first, element.pos),
+                            worldToScreen(second, element.pos),
                         );
                     }
                 }
@@ -197,7 +234,7 @@ function frame(timestamp) {
             }
         }
     }
-    drawText(`x: ${-Player.camera.x}, y: ${-Player.camera.y}, z: ${-Player.camera.z}`, { x: 2, y: 2 });
+    drawText(`x: ${-Player.pos.x}, y: ${-Player.pos.y}, z: ${-Player.pos.z}`, { x: 2, y: 2 });
     drawText(`fps: ${currentFPS}`, { x: 2, y: 20 });
     requestAnimationFrame(frame);
 }

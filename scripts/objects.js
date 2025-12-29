@@ -33,7 +33,10 @@ const Penger = {
         y: 0,
         z: 0,
     },
-    rotate: 179,
+    rotation: {
+        yaw: 0,
+        pitch: 0,
+    },
     vertices: [
         { x: -0.086914, y: 0.277547, z: 0.400041 },
         { x: -0.069555, y: 0.329698, z: 0.376422 },
