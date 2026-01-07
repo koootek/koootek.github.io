@@ -131,7 +131,7 @@ document.addEventListener("keydown", (e) => {
         }
     }
 });
-document.addEventListener("mousedown", (e) => {
+scene.addEventListener("mousedown", (e) => {
     if (e.buttons != 1) // primary button
         return;
 
