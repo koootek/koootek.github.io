@@ -64,6 +64,8 @@ function createElements() {
 
 createElements();
 
+// TODO: add audio selector
+
 const audioPlayer = document.getElementById("audioPlayer");
 const audioPlayerBar = document.getElementById("audioPlayerBar");
 
@@ -254,6 +256,8 @@ const audioController = new AudioController([
     new Soundtrack("Nie mogę oddychać", "Grzesiek Floryda 997", "grzegooorzu.jpg", "grzesio.mp3"),
     new Soundtrack("RU_BOOTLEG", "ilyhiryu", "bootleg.jpg", "ru_bootleg.mp3"),
     new Soundtrack("WE ARE CHARLIE KIRK", "Unknown", "wearecharlie.png", "wearecharlie.mp3"),
+    new Soundtrack("What is Diddyblud doing?", "Unknown", "diddyblud.png", "diddyblud_jamaican.mp3"),
+    new Soundtrack("charlie charlie kirky i just popped a perky", "PizzaMan", "charlie_charlie_kirky.png", "charlie_charlie_kirky.mp3"),
 ]);
 audioController.loadData();
 
