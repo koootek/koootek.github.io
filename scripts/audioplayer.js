@@ -258,6 +258,7 @@ const audioController = new AudioController([
     new Soundtrack("WE ARE CHARLIE KIRK", "Unknown", "wearecharlie.png", "wearecharlie.mp3"),
     new Soundtrack("What is Diddyblud doing?", "Unknown", "diddyblud.png", "diddyblud_jamaican.mp3"),
     new Soundtrack("charlie charlie kirky i just popped a perky", "PizzaMan", "charlie_charlie_kirky.png", "charlie_charlie_kirky.mp3"),
+    new Soundtrack("Bij menela", "ihateportals", "bij_menela.png", "bij_menela.mp3"),
 ]);
 audioController.loadData();
 
