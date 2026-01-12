@@ -201,3 +201,49 @@ canvas {
     filter: var(--visibility-filter);
     margin: 5px 0px 0px 0px;
 }
+
+#chooser {
+    position: fixed;
+    z-index: 999;
+    top: 200px;
+    right: 4px;
+    max-height: 300px;
+    max-width: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: var(--light-background-color);
+    border: 1px solid var(--light-border-color);
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+    display: none;
+}
+
+#chooser>div {
+    width: 100%;
+    height: 48px;
+}
+
+#chooser>div>img,
+#chooser>div>div {
+    float: left;
+}
+
+#chooser>div>img {
+    width: 48px;
+    clear: both;
+}
+
+#chooser>div>div:nth-of-type(1) {
+    padding-left: 10px;
+    height: 48px;
+}
+
+#chooser>div>div:nth-of-type(1)>h4 {
+    margin-top: 0px;
+    border-bottom: 1px solid var(--opposite-border-color);
+    border-radius: 5%;
+}
+
+#chooser>div>div:nth-of-type(1)>h5 {
+    text-align: center;
+}

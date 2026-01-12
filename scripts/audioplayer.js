@@ -46,11 +46,20 @@ function createElements() {
     nextControl.src = "assets/icons/next.svg";
     nextControl.title = "next track";
     nextControl.alt = "next track icon";
+    const chooseAudio = document.createElement("img");
+    chooseAudio.id = "choose";
+    chooseAudio.src = "assets/icons/choose-down.svg";
+    chooseAudio.title = "choose audio";
+    chooseAudio.alt = "choose audio icon";
+
+    const audioChooser = document.createElement("div");
+    audioChooser.id = "chooser";
 
     audioControls.appendChild(qualityControl);
     audioControls.appendChild(previousControl);
     audioControls.appendChild(playbackControl);
     audioControls.appendChild(nextControl);
+    audioControls.appendChild(chooseAudio);
 
     audioPlayerBar.appendChild(audioIcon);
     audioPlayerBar.appendChild(audioInfo);
@@ -60,11 +69,10 @@ function createElements() {
 
     document.body.appendChild(audioPlayer);
     document.body.appendChild(audioPlayerBar);
+    document.body.appendChild(audioChooser);
 }
 
 createElements();
-
-// TODO: add audio selector
 
 const audioPlayer = document.getElementById("audioPlayer");
 const audioPlayerBar = document.getElementById("audioPlayerBar");
@@ -82,6 +90,7 @@ const controlButtons = Object.freeze({
     timeline: document.getElementById("timeline"),
     volume: document.getElementById("volume"),
     quality: document.getElementById("quality"),
+    choose: document.getElementById("choose"),
 });
 
 class AudioController {
@@ -103,8 +112,25 @@ class AudioController {
         }, 2500);
     }
 
+    get soundtracks() {
+        return this.#soundtracks;
+    }
+
     get currentTrack() {
         return this.#soundtracks[this.#currentTrack];
+    }
+
+    set currentTrack(newTrack) {
+        this.#currentTrack = Math.max(0, Math.min(this.#soundtracks.length - 1, newTrack));
+        this.#updateTrackDisplay();
+        this.#playing = false;
+        this.currentTrack.load(this.highQuality);
+        if (this.autoplay) {
+            this.play();
+            controlButtons.playback.src = "assets/icons/pause.svg";
+        }
+        else
+            controlButtons.playback.src = "assets/icons/play.svg";
     }
 
     get playing() {
@@ -225,6 +251,21 @@ class AudioController {
     }
 }
 
+let chooserOpen = false;
+const chooser = document.getElementById("chooser");
+
+function chooseAudio() {
+    chooserOpen = !chooserOpen;
+    if (chooserOpen) {
+        chooser.style.display = "block";
+        controlButtons.choose.src = "assets/icons/choose-up.svg";
+    }
+    else {
+        chooser.style.display = "none";
+        controlButtons.choose.src = "assets/icons/choose-down.svg";
+    }
+}
+
 class Soundtrack {
     constructor(title, author, iconPath, trackPath) {
         this.title = title;
@@ -260,7 +301,39 @@ const audioController = new AudioController([
     new Soundtrack("charlie charlie kirky i just popped a perky", "PizzaMan", "charlie_charlie_kirky.png", "charlie_charlie_kirky.mp3"),
     new Soundtrack("Bij menela", "ihateportals", "bij_menela.png", "bij_menela.mp3"),
 ]);
+
+function initChooser() {
+    let i = 0;
+    for (const audio of audioController.soundtracks) {
+        const iCopy = i;
+        const item = document.createElement("div");
+
+        const icon = document.createElement("img");
+        const info = document.createElement("div");
+        const title = document.createElement("h4");
+        const author = document.createElement("h5");
+
+        icon.src = `assets/images/${audio.iconPath}`;
+        title.innerText = audio.title;
+        author.innerText = audio.author;
+
+        info.appendChild(title);
+        info.appendChild(author);
+
+        item.appendChild(icon);
+        item.appendChild(info);
+
+        item.addEventListener("click", () => {
+            audioController.currentTrack = iCopy;
+        });
+
+        chooser.appendChild(item);
+        i++;
+    }
+}
+
 audioController.loadData();
+initChooser();
 
 audioPlayer.addEventListener("loadedmetadata", () => {
     controlButtons.timeline.max = audioPlayer.duration;
@@ -294,4 +367,7 @@ controlButtons.volume.addEventListener("mousemove", () => {
 controlButtons.quality.addEventListener("click", () => {
     audioController.changeQuality();
     audioController.saveData();
+});
+controlButtons.choose.addEventListener("click", () => {
+    chooseAudio();
 });
