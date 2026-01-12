@@ -46,6 +46,11 @@ function createElements() {
     nextControl.src = "assets/icons/next.svg";
     nextControl.title = "next track";
     nextControl.alt = "next track icon";
+    const loop = document.createElement("img");
+    loop.id = "loop";
+    loop.src = "assets/icons/loop.svg";
+    loop.title = "loop track";
+    loop.alt = "loop track icon";
     const chooseAudio = document.createElement("img");
     chooseAudio.id = "choose";
     chooseAudio.src = "assets/icons/choose-down.svg";
@@ -59,6 +64,7 @@ function createElements() {
     audioControls.appendChild(previousControl);
     audioControls.appendChild(playbackControl);
     audioControls.appendChild(nextControl);
+    audioControls.appendChild(loop);
     audioControls.appendChild(chooseAudio);
 
     audioPlayerBar.appendChild(audioIcon);
@@ -90,6 +96,7 @@ const controlButtons = Object.freeze({
     timeline: document.getElementById("timeline"),
     volume: document.getElementById("volume"),
     quality: document.getElementById("quality"),
+    loop: document.getElementById("loop"),
     choose: document.getElementById("choose"),
 });
 
@@ -99,13 +106,18 @@ class AudioController {
     #soundtracks;
     autoplay = true; // unhandled
     highQuality = true;
+    loop = false;
 
     constructor(soundtracks) {
         this.#soundtracks = soundtracks;
         setInterval(() => {
             controlButtons.timeline.value = audioPlayer.currentTime;
-            if (audioPlayer.ended && this.autoplay)
-                this.nextTrack();
+            if (audioPlayer.ended) {
+                if (this.loop)
+                    this.#moveTrack(() => { });
+                else if (this.autoplay)
+                    this.nextTrack();
+            }
         }, 100);
         setInterval(() => {
             this.saveData();
@@ -368,6 +380,14 @@ controlButtons.quality.addEventListener("click", () => {
     audioController.changeQuality();
     audioController.saveData();
 });
+controlButtons.loop.addEventListener("click", () => {
+    audioController.loop = !audioController.loop;
+    if (audioController.loop)
+        controlButtons.loop.style.filter = "brightness(0) invert(1) sepia(1) saturate(10000%) hue-rotate(100deg) brightness(75%)";
+    else
+        controlButtons.loop.style.filter = "";
+});
 controlButtons.choose.addEventListener("click", () => {
     chooseAudio();
+    audioController.saveData();
 });
